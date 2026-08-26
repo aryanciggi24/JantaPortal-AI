@@ -22,4 +22,4 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:5173`. The Vite proxy routes API requests to the FastAPI server.
+Open `https://janta-portal-1i0lsgzgp-aryanciggi24.vercel.app/`. The Vite proxy routes API requests to the FastAPI server.
