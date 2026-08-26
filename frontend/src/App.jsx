@@ -1,6 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-
-const API = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 const DEMO_CASE_META = {
   'CASE-2026-001': { location: 'Pune, Maharashtra', days: 7 },
   'CASE-2026-002': { location: 'Lucknow, Uttar Pradesh', days: 14 },
@@ -38,16 +36,16 @@ export default function App() {
   }
   async function loadInitialCases() {
     try {
-      const items = await requestJson(`${API}/api/cases`, undefined, 'Unable to load demo cases')
+      const items = await requestJson('/api/cases', undefined, 'Unable to load demo cases')
       setCases(items)
       const fullCases = await Promise.all(items.map(async item => {
-        try { return await requestJson(`${API}/api/cases/${item.case_id}`, undefined, 'Case unavailable') }
+        try { return await requestJson(`/api/cases/${item.case_id}`, undefined, 'Case unavailable') }
         catch { return { ...item, district: DEMO_CASE_META[item.case_id]?.location, state: '', days_pending: DEMO_CASE_META[item.case_id]?.days } }
       }))
       const map = Object.fromEntries(fullCases.map(item => [item.case_id, item]))
       setDossiers(map)
       if (fullCases[0]) selectCase(fullCases[0], map)
-    } catch (err) { setError(`${err.message}. Confirm that FastAPI is running on port 8000.`) }
+    } catch (err) { setError(`${err.message}. Confirm that FastAPI is running.`) }
   }
   function selectCase(selected, source = dossiers) {
     const data = typeof selected === 'string' ? source[selected] : selected
@@ -58,7 +56,7 @@ export default function App() {
     if (!data) return
     setLoading(true); setError(''); setNotice('')
     try {
-      const result = await requestJson(`${API}/api/cases/${data.case_id}/analyze`, {
+      const result = await requestJson(`/api/cases/${data.case_id}/analyze`, {
         method: 'POST', headers: payload ? { 'Content-Type': 'application/json' } : undefined,
         body: payload ? JSON.stringify(payload) : undefined,
       }, 'Analysis could not be completed')
@@ -84,7 +82,7 @@ export default function App() {
   async function downloadRti() {
     if (!caseData || !analysis) return
     try {
-      const response = await fetch(`${API}/api/cases/${caseData.case_id}/download-rti`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ case_id: caseData.case_id, formatted_rti_text: analysis.formatted_rti_text }) })
+      const response = await fetch(`/api/cases/${caseData.case_id}/download-rti`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ case_id: caseData.case_id, formatted_rti_text: analysis.formatted_rti_text }) })
       if (!response.ok) throw new Error(`PDF download failed (${response.status})`)
       const href = URL.createObjectURL(await response.blob())
       const link = Object.assign(document.createElement('a'), { href, download: `${caseData.case_id}-rti-application.pdf` })
@@ -95,7 +93,7 @@ export default function App() {
   function login(nextRole) { setRole(nextRole); setLoginOpen(false); setNotice(`Logged in as ${nextRole === 'officer' ? 'Nodal Officer (PWD Desk)' : 'Citizen (Demo)'}.`) }
 
   return <div className="min-h-screen bg-white text-slate-900">
-    <header className="site-header"><div className="shell header-row"><div className="brand"><strong>JantaPortal AI</strong><span className="status-dot" aria-hidden="true"/><span className="system-label">System online · Port 8000</span></div><nav className="header-actions" aria-label="Account actions"><span className="persona">Logged in as: <b>{persona.title}</b></span>{role === 'citizen' && <button className="file-action" onClick={() => setFormOpen(true)}>+ File Grievance</button>}<button className="text-action" onClick={() => setLoginOpen(true)}>Demo Login</button></nav></div></header>
+    <header className="site-header"><div className="shell header-row"><div className="brand"><strong>JantaPortal AI</strong><span className="status-dot" aria-hidden="true"/><span className="system-label">System online</span></div><nav className="header-actions" aria-label="Account actions"><span className="persona">Logged in as: <b>{persona.title}</b></span>{role === 'citizen' && <button className="file-action" onClick={() => setFormOpen(true)}>+ File Grievance</button>}<button className="text-action" onClick={() => setLoginOpen(true)}>Demo Login</button></nav></div></header>
     <aside className="guardrail"><div className="shell"><button className="guardrail-toggle" onClick={() => setGuardrailOpen(open => !open)} aria-expanded={guardrailOpen}><span><b>About JantaPortal AI &amp; Guardrails</b><small>CPGRAMS pre-screening and admissibility guidance</small></span><span>{guardrailOpen ? 'Hide details' : 'View details'}</span></button>{guardrailOpen && <div className="guardrail-content"><div><b>What we do</b><p>Autonomous AI pre-screening, bureaucratic CPGRAMS draft formatting, department mapping, and automatic RTI escalation tracking after 21 days.</p></div><div><b>What is excluded (CPGRAMS policy)</b><ul><li>RTI matters — handled separately via our RTI Generator</li><li>Subjudice / court-related matters</li><li>Religious disputes</li><li>Internal Government employee service matters</li></ul></div></div>}</div></aside>
     <main className="shell main-content">
       {error && <Message type="error">{error}</Message>}{notice && <Message type="notice">{notice}</Message>}
