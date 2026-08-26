@@ -1,0 +1,33 @@
+[
+  {
+    "case_id": "CASE-2026-001",
+    "applicant_name": "Aarav Test Citizen",
+    "address": "Demo Ward 12, Pune, Maharashtra - 411001",
+    "category": "Public Works",
+    "prompt_text": "The main road near our demo ward has large potholes and broken drainage covers. Two-wheelers are slipping during rain. Please repair it urgently and tell us when the work will start.",
+    "days_pending": 7,
+    "state": "Maharashtra",
+    "district": "Pune"
+  },
+  {
+    "case_id": "CASE-2026-002",
+    "applicant_name": "Meera Demo Applicant",
+    "address": "Sample Colony, Lucknow, Uttar Pradesh - 226001",
+    "category": "Higher Education Scholarship",
+    "prompt_text": "My scholarship application at a central university has not been processed. I need the certified status, file movement details, and copies of the relevant records for my application.",
+    "days_pending": 14,
+    "state": "Uttar Pradesh",
+    "district": "Lucknow"
+  },
+  {
+    "case_id": "CASE-2026-003",
+    "applicant_name": "Kabir Test User",
+    "address": "Prototype Nagar, Bengaluru, Karnataka - 560001",
+    "category": "Municipal Road Repair Escalation",
+    "prompt_text": "My complaint about the unsafe collapsed footpath and potholes on the demo access road was registered 25 days ago. It remains unresolved and creates a daily safety risk for pedestrians.",
+    "days_pending": 25,
+    "state": "Karnataka",
+    "district": "Bengaluru Urban",
+    "previous_grievance_reference": "DEMO/CPG/2026/0003"
+  }
+]
